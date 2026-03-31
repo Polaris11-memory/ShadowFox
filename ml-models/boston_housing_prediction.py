@@ -10,8 +10,7 @@ A complete regression pipeline including:
   - Visualization of results
 """
 
-import warnings
-warnings.filterwarnings("ignore")
+
 
 import numpy as np
 import pandas as pd
@@ -30,14 +29,14 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.pipeline import Pipeline
 
-# ─────────────────────────────────────────────
+
 # 1. LOAD DATA
-# ─────────────────────────────────────────────
+
 print("=" * 60)
 print("  BOSTON HOUSING PRICE PREDICTION")
 print("=" * 60)
 
-df = pd.read_csv("/mnt/user-data/uploads/HousingData.csv")
+df = pd.read_csv("C:\Users\Soumya Das\Downloads\HousingData.csv")
 
 FEATURE_DESCRIPTIONS = {
     "CRIM":    "Per-capita crime rate by town",
@@ -56,14 +55,14 @@ FEATURE_DESCRIPTIONS = {
     "MEDV":    "Median value of owner-occupied homes ($1000s)  ← TARGET",
 }
 
-print(f"\n📦  Dataset shape : {df.shape[0]} rows × {df.shape[1]} columns")
-print(f"\n📋  Feature descriptions:")
+print(f"\n  Dataset shape : {df.shape[0]} rows × {df.shape[1]} columns")
+print(f"\n  Feature descriptions:")
 for col, desc in FEATURE_DESCRIPTIONS.items():
     print(f"    {col:<9} {desc}")
 
-# ─────────────────────────────────────────────
+
 # 2. EXPLORATORY DATA ANALYSIS
-# ─────────────────────────────────────────────
+
 print("\n\n── 2. EXPLORATORY DATA ANALYSIS ──────────────────────────")
 print(f"\nMissing values per column:\n{df.isnull().sum()[df.isnull().sum() > 0]}")
 print(f"\nTarget (MEDV) stats:\n{df['MEDV'].describe().to_string()}")
@@ -72,9 +71,9 @@ features = [c for c in df.columns if c != "MEDV"]
 X_raw = df[features]
 y = df["MEDV"]
 
-# ─────────────────────────────────────────────
+
 # 3. PREPROCESSING
-# ─────────────────────────────────────────────
+
 print("\n\n── 3. PREPROCESSING ──────────────────────────────────────")
 
 # 3a. Impute missing values with median (robust to outliers)
@@ -111,9 +110,9 @@ X_train_s = scaler.fit_transform(X_train)
 X_test_s  = scaler.transform(X_test)
 print(f"  ✔ Features standardised (zero-mean, unit-variance)")
 
-# ─────────────────────────────────────────────
+
 # 4. MODEL TRAINING & EVALUATION (BASELINE)
-# ─────────────────────────────────────────────
+
 print("\n\n── 4. BASELINE MODEL EVALUATION ─────────────────────────")
 
 def evaluate(name, model, Xtr, ytr, Xte, yte, scaled=True):
@@ -146,9 +145,9 @@ results.append(evaluate("Decision Tree",
 results.append(evaluate("Gradient Boosting",
     GradientBoostingRegressor(random_state=42), X_train, y_train, X_test, y_test))
 
-# ─────────────────────────────────────────────
+
 # 5. FINE-TUNING (GRADIENT BOOSTING via GridSearchCV)
-# ─────────────────────────────────────────────
+
 print("\n\n── 5. FINE-TUNING (GridSearchCV on GradientBoosting) ─────")
 param_grid = {
     "n_estimators":   [100, 200, 300],
@@ -168,14 +167,14 @@ best_gb = gb_cv.best_estimator_
 results.append(evaluate("GBR (fine-tuned)",
     best_gb, X_train, y_train, X_test, y_test))
 
-# ─────────────────────────────────────────────
+
 # 6. FEATURE IMPORTANCE (best model)
-# ─────────────────────────────────────────────
+
 feat_imp = pd.Series(best_gb.feature_importances_, index=features).sort_values(ascending=False)
 
-# ─────────────────────────────────────────────
+
 # 7. VISUALISATIONS
-# ─────────────────────────────────────────────
+
 print("\n\n── 6. GENERATING VISUALISATIONS ──────────────────────────")
 
 PALETTE = {
@@ -216,7 +215,7 @@ gs = gridspec.GridSpec(4, 2, figure=fig, hspace=0.45, wspace=0.3,
 fig.suptitle("Boston Housing Price Prediction — Model Report",
              fontsize=20, fontweight="bold", color=PALETTE["text"], y=0.975)
 
-# ── 7a. Correlation heatmap ──────────────────
+#  7a. Correlation heatmap 
 ax1 = fig.add_subplot(gs[0, 0])
 corr = pd.concat([X_clean, y], axis=1).corr()
 mask = np.triu(np.ones_like(corr, dtype=bool))
@@ -227,7 +226,7 @@ sns.heatmap(corr, mask=mask, ax=ax1, cmap="coolwarm", center=0,
 ax1.set_title("Feature Correlation Matrix", color=PALETTE["text"])
 ax1.tick_params(colors=PALETTE["muted"], labelsize=8)
 
-# ── 7b. Target distribution ──────────────────
+#  7b. Target distribution 
 ax2 = fig.add_subplot(gs[0, 1])
 ax2.hist(y, bins=30, color=PALETTE["accent1"], edgecolor=PALETTE["bg"], alpha=0.85)
 ax2.axvline(y.mean(), color=PALETTE["accent2"], lw=2, ls="--", label=f"Mean={y.mean():.1f}")
@@ -238,7 +237,7 @@ ax2.set_ylabel("Frequency")
 ax2.legend(fontsize=9)
 ax2.grid(True)
 
-# ── 7c. Model comparison bar chart ───────────
+#  7c. Model comparison bar chart 
 ax3 = fig.add_subplot(gs[1, 0])
 names  = [r["name"] for r in results]
 r2vals = [r["r2"]   for r in results]
@@ -256,7 +255,7 @@ ax3.set_xlabel("R² Score (higher is better)")
 ax3.legend(fontsize=8)
 ax3.grid(True, axis="x")
 
-# ── 7d. RMSE comparison ──────────────────────
+#  7d. RMSE comparison 
 ax4 = fig.add_subplot(gs[1, 1])
 rmses = [r["rmse"] for r in results]
 bars4 = ax4.barh(names, rmses, color=colors[:len(names)],
@@ -268,7 +267,7 @@ ax4.set_title("Model Comparison — RMSE ($1000s)")
 ax4.set_xlabel("RMSE (lower is better)")
 ax4.grid(True, axis="x")
 
-# ── 7e. Predicted vs Actual (best model) ─────
+#  7e. Predicted vs Actual (best model) 
 ax5 = fig.add_subplot(gs[2, 0])
 best_pred = results[-1]["pred"]
 ax5.scatter(y_test, best_pred, alpha=0.65, s=30,
@@ -283,7 +282,7 @@ ax5.set_ylabel("Predicted MEDV ($1000s)")
 ax5.legend(fontsize=9)
 ax5.grid(True)
 
-# ── 7f. Residual plot ────────────────────────
+#  7f. Residual plot 
 ax6 = fig.add_subplot(gs[2, 1])
 residuals = y_test.values - best_pred
 ax6.scatter(best_pred, residuals, alpha=0.65, s=30,
@@ -294,7 +293,7 @@ ax6.set_xlabel("Predicted MEDV ($1000s)")
 ax6.set_ylabel("Residual (Actual − Predicted)")
 ax6.grid(True)
 
-# ── 7g. Feature importance ───────────────────
+#  7g. Feature importance 
 ax7 = fig.add_subplot(gs[3, 0])
 fi_colors = [PALETTE["accent1"] if v >= feat_imp.median() else PALETTE["muted"]
              for v in feat_imp.values]
@@ -304,7 +303,7 @@ ax7.set_title("Feature Importance — GBR (Fine-tuned)")
 ax7.set_xlabel("Importance Score")
 ax7.grid(True, axis="x")
 
-# ── 7h. Metrics summary table ────────────────
+#  7h. Metrics summary table 
 ax8 = fig.add_subplot(gs[3, 1])
 ax8.axis("off")
 table_data = [[r["name"],
@@ -335,12 +334,12 @@ plt.savefig(output_path, dpi=150, bbox_inches="tight", facecolor=PALETTE["bg"])
 plt.close()
 print(f"  ✔ Saved → {output_path}")
 
-# ─────────────────────────────────────────────
+
 # 8. FINAL SUMMARY
-# ─────────────────────────────────────────────
+
 best = max(results, key=lambda r: r["r2"])
 print("\n\n── 7. FINAL SUMMARY ──────────────────────────────────────")
-print(f"\n  🏆  Best model : {best['name']}")
+print(f"\n   Best model : {best['name']}")
 print(f"      MSE        : {best['mse']:.3f}")
 print(f"      RMSE       : {best['rmse']:.3f}  ($1000s)")
 print(f"      MAE        : {best['mae']:.3f}  ($1000s)")
