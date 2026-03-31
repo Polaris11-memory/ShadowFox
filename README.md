@@ -10,11 +10,7 @@
 
 ---
 
-##  Live Demo
 
-> Deploy `web-app/` via GitHub Pages — see instructions below.
-
----
 
 
 ### Pipeline Overview
@@ -65,8 +61,7 @@ Raw CSV → Impute Missing Values → Clip Outliers → Train/Test Split
 git clone https://github.com/Polaris11-memory/boston-house-predictor.git
 cd boston-house-predictor/ml-model
 
-# 2. Install dependencies
-pip install -r requirements.txt
+
 
 # 3. Run the full pipeline
 python boston_housing_prediction.py
@@ -95,16 +90,7 @@ A fully interactive, zero-dependency browser app with:
 - **Live feature driver chart** — shows top 6 prediction influences
 - **Tooltips** — hover any feature for a plain-English description
 
-### Run Locally
 
-Just open `web-app/index.html` in any browser — no server or installation needed.
-
-```bash
-# From the repo root:
-open web-app/index.html        # macOS
-start web-app/index.html       # Windows
-xdg-open web-app/index.html    # Linux
-```
 
 ### Deploy via GitHub Pages (Free Hosting)
 
@@ -113,12 +99,12 @@ xdg-open web-app/index.html    # Linux
 3. Set Source: **Deploy from a branch → main → / (root)**
 4. Your app goes live at:
    ```
-   https://Polaris11-memory.github.io/boston-house-predictor/web-app/
+  https://polaris11-memory.github.io/ShadowFox/
    ```
 
 ---
 
-## 📊 Dataset
+##  Dataset
 
 | Attribute | Value |
 |---|---|
